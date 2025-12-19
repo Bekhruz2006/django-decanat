@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Расписание - {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="flex justify-between align-center mb-20">
+    <h2 style="font-size: 28px;">📅 Расписание группы {{ group.name }}</h2>
+    <a href="{% url 'schedule_download' %}?week={{ week_offset }}" class="btn btn-primary">📥 Скачать .docx</a>
+</div>
+
+<!-- Переключатель недель -->
+<div class="card" style="text-align: center;">
+    <div class="flex justify-between align-center">
+        <a href="?week={{ week_offset|add:-1 }}" class="btn btn-secondary">← Предыдущая неделя</a>
+        <h3>
+            {% if week_offset == 0 %}
+                Текущая неделя
+            {% elif week_offset == 1 %}
+                Следующая неделя
+            {% else %}
+                Неделя +{{ week_offset }}
+            {% endif %}
+        </h3>
+        <a href="?week={{ week_offset|add:1 }}" class="btn btn-secondary">Следующая неделя →</a>
+    </div>
+</div>
+
+<!-- Таблица расписания -->
+<div class="card">
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th style="width: 150px;">Время</th>
+                {% for day_num, day_name in weekdays %}
+                <th>{{ day_name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: 600;">09:00 - 10:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|dict_get:day_num %}
+                        {% if sched.start_time.hour == 9 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.teacher.full_name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">11:00 - 12:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|dict_get:day_num %}
+                        {% if sched.start_time.hour == 11 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.teacher.full_name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">13:00 - 14:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|dict_get:day_num %}
+                        {% if sched.start_time.hour == 13 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.teacher.full_name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">15:00 - 16:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|dict_get:day_num %}
+                        {% if sched.start_time.hour == 15 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.teacher.full_name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

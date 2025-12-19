@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if group %}Редактирование{% else %}Создание{% endif %} группы{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">
+    {% if group %}✏️ Редактирование группы{% else %}➕ Создание группы{% endif %}
+</h2>
+
+<div class="card" style="max-width: 500px;">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div style="color: var(--danger-color); font-size: 13px; margin-top: 5px;">
+                    {{ form.name.errors|join:", " }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.course.label }}</label>
+            {{ form.course }}
+            {% if form.course.errors %}
+                <div style="color: var(--danger-color); font-size: 13px; margin-top: 5px;">
+                    {{ form.course.errors|join:", " }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="flex gap-10">
+            <button type="submit" class="btn btn-success">Сохранить</button>
+            <a href="{% url 'admin_groups' %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Чат с {{ contact.full_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="flex justify-between align-center mb-20" style="padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <div>
+            <h2 style="font-size: 24px; margin-bottom: 5px;">💬 {{ contact.full_name }}</h2>
+            <p style="color: var(--text-light);">{{ contact.get_role_display }}</p>
+        </div>
+        <a href="{% url 'chat_list' %}" class="btn btn-secondary">← Назад</a>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto; padding: 20px; background: var(--bg-color); border-radius: 8px; margin-bottom: 20px;">
+        {% for msg in messages_list %}
+        <div class="message {% if msg.sender == user %}mine{% endif %}">
+            <div class="message-content">
+                <strong>{{ msg.sender.full_name }}</strong>
+                <p style="margin: 5px 0;">{{ msg.content }}</p>
+                <div class="message-time">{{ msg.created_at|date:"d.m.Y H:i" }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <form method="post" class="chat-input-form">
+        {% csrf_token %}
+        <div style="display: flex; gap: 10px;">
+            {{ form.content }}
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Прокрутка к последнему сообщению
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+</script>
+{% endblock %}

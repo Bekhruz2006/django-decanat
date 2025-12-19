@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои группы{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">📚 Мои группы и предметы</h2>
+
+<div class="card-grid">
+    {% for item in groups_list %}
+    <div class="card">
+        <h3 style="font-size: 22px; color: var(--primary-color); margin-bottom: 15px;">
+            🎓 {{ item.group.name }}
+        </h3>
+        <p style="color: var(--text-light); margin-bottom: 20px;">
+            {{ item.group.course }} курс • {{ item.group.students.count }} студентов
+        </p>
+        
+        <h4 style="font-size: 16px; margin-bottom: 10px;">Предметы:</h4>
+        {% for subject in item.subjects %}
+        <a href="{% url 'teacher_journal' item.group.id subject.id %}" 
+           class="btn btn-primary btn-small" 
+           style="display: block; margin-bottom: 10px;">
+            📖 {{ subject.name }}
+        </a>
+        {% endfor %}
+    </div>
+    {% empty %}
+    <div class="card">
+        <p class="text-center" style="color: var(--text-light); padding: 40px;">
+            У вас нет назначенных групп
+        </p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

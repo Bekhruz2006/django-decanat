@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Мое расписание{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">📅 Мое расписание</h2>
+
+<div class="card">
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th style="width: 150px;">Время</th>
+                {% for day_num, day_name in weekdays %}
+                <th>{{ day_name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: 600;">09:00 - 10:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% with day_schedule=schedule_by_day|get_item:day_num %}
+                    {% for sched in day_schedule %}
+                        {% if sched.start_time.hour == 9 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.group.name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% endwith %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">11:00 - 12:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|get_item:day_num %}
+                        {% if sched.start_time.hour == 11 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.group.name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">13:00 - 14:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|get_item:day_num %}
+                        {% if sched.start_time.hour == 13 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.group.name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="font-weight: 600;">15:00 - 16:30</td>
+                {% for day_num, day_name in weekdays %}
+                <td>
+                    {% for sched in schedule_by_day|get_item:day_num %}
+                        {% if sched.start_time.hour == 15 %}
+                        <div class="schedule-item">
+                            <strong>{{ sched.subject.name }}</strong>
+                            <small>{{ sched.group.name }}</small>
+                            <small>Ауд. {{ sched.room }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

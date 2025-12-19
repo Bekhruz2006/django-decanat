@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Журнал - {{ group.name }} - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="flex justify-between align-center mb-20">
+    <div>
+        <h2 style="font-size: 28px; margin-bottom: 5px;">📝 Журнал посещаемости</h2>
+        <p style="color: var(--text-light);">{{ group.name }} • {{ subject.name }}</p>
+    </div>
+    <a href="{% url 'teacher_groups' %}" class="btn btn-secondary">← Назад к группам</a>
+</div>
+
+<!-- Переключатель недель -->
+<div class="card">
+    <div class="flex justify-between align-center">
+        <a href="?week={{ week_offset|add:-1 }}" class="btn btn-secondary">← Предыдущая неделя</a>
+        <h3>
+            {{ week_start|date:"d.m.Y" }} - {{ week_end|date:"d.m.Y" }}
+        </h3>
+        <a href="?week={{ week_offset|add:1 }}" class="btn btn-secondary">Следующая неделя →</a>
+    </div>
+</div>
+
+<!-- Журнал -->
+<div class="card" style="overflow-x: auto;">
+    <table class="journal-table">
+        <thead>
+            <tr>
+                <th style="min-width: 200px;">Студент</th>
+                {% for day in week_days %}
+                <th style="min-width: 120px;">
+                    {{ day|date:"d.m" }}<br>
+                    <small>{{ day|date:"D" }}</small>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in journal_data %}
+            <tr>
+                <td style="text-align: left; font-weight: 600;">
+                    {{ row.student.full_name }}
+                </td>
+                {% for day_data in row.days %}
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                        <select class="attendance-status" 
+                                data-attendance-id="{{ day_data.attendance.id }}"
+                                {% if not day_data.can_edit %}disabled{% endif %}>
+                            <option value="present" {% if day_data.attendance.status == 'present' %}selected{% endif %}>Б</option>
+                            <option value="absent" {% if day_data.attendance.status == 'absent' %}selected{% endif %}>Н</option>
+                        </select>
+                        <input type="number" 
+                               class="attendance-grade" 
+                               min="1" 
+                               max="12"
+                               value="{{ day_data.attendance.grade|default:'' }}"
+                               data-attendance-id="{{ day_data.attendance.id }}"
+                               placeholder="—"
+                               {% if not day_data.can_edit %}disabled{% endif %}>
+                        <a href="{% url 'attendance_history' day_data.attendance.id %}" 
+                           class="btn btn-small" 
+                           style="font-size: 11px; padding: 2px 5px;"
+                           title="История изменений">📜</a>
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="saveNotification" style="display: none; position: fixed; bottom: 20px; right: 20px; background: var(--success-color); color: white; padding: 15px 25px; border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 1000;">
+    ✓ Сохранено
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelects = document.querySelectorAll('.attendance-status');
+    const gradeInputs = document.querySelectorAll('.attendance-grade');
+    
+    function saveAttendance(attendanceId, field, value) {
+        const formData = new FormData();
+        formData.append('attendance_id', attendanceId);
+        formData.append('field', field);
+        formData.append('value', value);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        
+        fetch('{% url "update_attendance" %}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        });
+    }
+    
+    function showNotification() {
+        const notification = document.getElementById('saveNotification');
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 2000);
+    }
+    
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const attendanceId = this.dataset.attendanceId;
+            saveAttendance(attendanceId, 'status', this.value);
+        });
+    });
+    
+    gradeInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const attendanceId = this.dataset.attendanceId;
+            saveAttendance(attendanceId, 'grade', this.value);
+        });
+    });
+});
+</script>
+{% endblock %}

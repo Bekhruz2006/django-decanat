@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои оценки{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">📊 Мои оценки и посещаемость</h2>
+
+<!-- Фильтр по предмету -->
+<div class="card">
+    <form method="get" class="flex gap-10 align-center">
+        <label style="font-weight: 600;">Предмет:</label>
+        <select name="subject" class="form-select" onchange="this.form.submit()" style="width: 300px;">
+            <option value="">Все предметы</option>
+            {% for subject in subjects %}
+            <option value="{{ subject.id }}" {% if selected_subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                {{ subject.name }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if selected_subject %}
+        <a href="{% url 'student_journal' %}" class="btn btn-secondary btn-small">Сбросить</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Таблица оценок -->
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Предмет</th>
+                <th>Посещаемость</th>
+                <th>Балл</th>
+                <th>Преподаватель</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.date|date:"d.m.Y" }}</td>
+                <td><strong>{{ attendance.subject.name }}</strong></td>
+                <td>
+                    {% if attendance.status == 'present' %}
+                        <span style="color: var(--success-color); font-weight: 600;">✓ Был</span>
+                    {% else %}
+                        <span style="color: var(--danger-color); font-weight: 600;">✗ Не был</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendance.grade %}
+                        <span style="font-size: 18px; font-weight: 700; color: var(--primary-color);">
+                            {{ attendance.grade }}
+                        </span>
+                    {% else %}
+                        <span style="color: var(--text-light);">—</span>
+                    {% endif %}
+                </td>
+                <td>{{ attendance.teacher.full_name }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center" style="padding: 40px; color: var(--text-light);">
+                    Записей не найдено
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

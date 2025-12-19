@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+<div class="flex justify-between align-center mb-20">
+    <h2 style="font-size: 28px;">👥 Управление пользователями</h2>
+    <a href="{% url 'admin_user_create' %}" class="btn btn-success">+ Добавить пользователя</a>
+</div>
+
+<!-- Фильтр -->
+<div class="card">
+    <form method="get" class="flex gap-10 align-center">
+        <select name="role" class="form-select" onchange="this.form.submit()" style="width: 200px;">
+            <option value="">Все роли</option>
+            <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Студенты</option>
+            <option value="teacher" {% if role_filter == 'teacher' %}selected{% endif %}>Преподаватели</option>
+            <option value="dean" {% if role_filter == 'dean' %}selected{% endif %}>Деканы</option>
+        </select>
+        {% if role_filter %}
+        <a href="{% url 'admin_users' %}" class="btn btn-secondary btn-small">Сбросить фильтр</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Таблица пользователей -->
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Логин</th>
+                <th>ФИО</th>
+                <th>Роль</th>
+                <th>Группа</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_obj in users %}
+            <tr>
+                <td>{{ user_obj.username }}</td>
+                <td>{{ user_obj.full_name }}</td>
+                <td>
+                    <span style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;
+                        {% if user_obj.role == 'dean' %}background: #dbeafe; color: #1e40af;
+                        {% elif user_obj.role == 'teacher' %}background: #fef3c7; color: #92400e;
+                        {% else %}background: #d1fae5; color: #065f46;{% endif %}">
+                        {{ user_obj.get_role_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if user_obj.role == 'student' and user_obj.student_profile %}
+                        {{ user_obj.student_profile.group.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user_obj.is_active %}
+                        <span style="color: var(--success-color);">✓ Активен</span>
+                    {% else %}
+                        <span style="color: var(--danger-color);">✗ Неактивен</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="flex gap-10">
+                        <a href="{% url 'admin_user_edit' user_obj.id %}" class="btn btn-secondary btn-small">✏️ Изменить</a>
+                        <button onclick="resetPassword({{ user_obj.id }}, '{{ user_obj.full_name }}')" class="btn btn-warning btn-small">
+                            🔑 Сбросить пароль
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center" style="padding: 40px; color: var(--text-light);">
+                    Пользователи не найдены
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно сброса пароля -->
+<div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="card" style="max-width: 400px; margin: 0;">
+        <h3 style="margin-bottom: 20px;">Сброс пароля</h3>
+        <p id="modalUserName" style="margin-bottom: 20px;"></p>
+        <form id="resetPasswordForm" method="post" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Новый пароль</label>
+                <input type="password" name="new_password" class="form-input" required>
+            </div>
+            <div class="flex gap-10">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" onclick="closeModal()" class="btn btn-secondary">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function resetPassword(userId, userName) {
+    document.getElementById('modalUserName').textContent = 'Сброс пароля для: ' + userName;
+    document.getElementById('resetPasswordForm').action = '/admin/users/' + userId + '/reset-password/';
+    document.getElementById('passwordModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Администрирование - Деканат{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 32px; margin-bottom: 30px; color: var(--primary-color);">
+    ⚙️ Панель администрирования
+</h2>
+
+<div class="admin-grid">
+    <a href="{% url 'admin_users' %}" class="admin-card">
+        <div class="admin-card-icon">👥</div>
+        <div class="admin-card-title">Пользователи</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Управление пользователями системы</p>
+    </a>
+    
+    <a href="{% url 'admin_groups' %}" class="admin-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <div class="admin-card-icon">🎓</div>
+        <div class="admin-card-title">Группы</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Управление учебными группами</p>
+    </a>
+    
+    <a href="{% url 'admin_subjects' %}" class="admin-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <div class="admin-card-icon">📚</div>
+        <div class="admin-card-title">Предметы</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Управление предметами и дисциплинами</p>
+    </a>
+    
+    <a href="{% url 'admin_schedule_manage' %}" class="admin-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+        <div class="admin-card-icon">📅</div>
+        <div class="admin-card-title">Расписание</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Управление расписанием занятий</p>
+    </a>
+    
+    <a href="{% url 'news_list' %}" class="admin-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+        <div class="admin-card-icon">📰</div>
+        <div class="admin-card-title">Новости</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Управление новостями деканата</p>
+    </a>
+    
+    <a href="{% url 'contacts_edit' %}" class="admin-card" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+        <div class="admin-card-icon">📞</div>
+        <div class="admin-card-title">Контакты</div>
+        <p style="margin-top: 10px; opacity: 0.9;">Редактирование контактной информации</p>
+    </a>
+</div>
+
+<div class="card">
+    <h3 class="card-title">📊 Быстрая статистика</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+        <div style="text-align: center; padding: 20px; background: var(--bg-color); border-radius: 8px;">
+            <div style="font-size: 36px; font-weight: 700; color: var(--primary-color);">
+                {{ user_count|default:"0" }}
+            </div>
+            <div style="color: var(--text-light);">Всего пользователей</div>
+        </div>
+        <div style="text-align: center; padding: 20px; background: var(--bg-color); border-radius: 8px;">
+            <div style="font-size: 36px; font-weight: 700; color: var(--success-color);">
+                {{ group_count|default:"0" }}
+            </div>
+            <div style="color: var(--text-light);">Учебных групп</div>
+        </div>
+        <div style="text-align: center; padding: 20px; background: var(--bg-color); border-radius: 8px;">
+            <div style="font-size: 36px; font-weight: 700; color: var(--warning-color);">
+                {{ subject_count|default:"0" }}
+            </div>
+            <div style="color: var(--text-light);">Предметов</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

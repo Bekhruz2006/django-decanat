@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}История изменений{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">📜 История изменений</h2>
+
+<div class="card">
+    <h3 style="margin-bottom: 15px;">
+        {{ attendance.student.full_name }} • {{ attendance.subject.name }}
+    </h3>
+    <p style="color: var(--text-light); margin-bottom: 20px;">
+        Дата занятия: {{ attendance.date|date:"d.m.Y" }}
+    </p>
+    
+    {% if history %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Дата и время</th>
+                <th>Кто изменил</th>
+                <th>Посещаемость</th>
+                <th>Балл</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.changed_at|date:"d.m.Y H:i" }}</td>
+                <td>{{ h.changed_by.full_name }}</td>
+                <td>
+                    {% if h.old_status != h.new_status %}
+                        <span style="text-decoration: line-through; color: var(--text-light);">{{ h.old_status }}</span>
+                        →
+                        <span style="font-weight: 600;">{{ h.new_status }}</span>
+                    {% else %}
+                        {{ h.new_status }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if h.old_grade != h.new_grade %}
+                        {% if h.old_grade %}
+                            <span style="text-decoration: line-through; color: var(--text-light);">{{ h.old_grade }}</span>
+                        {% else %}
+                            <span style="color: var(--text-light);">—</span>
+                        {% endif %}
+                        →
+                        {% if h.new_grade %}
+                            <span style="font-weight: 600;">{{ h.new_grade }}</span>
+                        {% else %}
+                            <span>—</span>
+                        {% endif %}
+                    {% else %}
+                        {{ h.new_grade|default:"—" }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center" style="color: var(--text-light); padding: 40px;">
+        История изменений пуста
+    </p>
+    {% endif %}
+    
+    <div class="mt-20">
+        <a href="javascript:history.back()" class="btn btn-secondary">← Назад</a>
+    </div>
+</div>
+{% endblock %}

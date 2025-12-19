@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">👤 Мой профиль</h2>
+
+<div class="card">
+    <div class="profile-header">
+        <div class="profile-photo">
+            👤
+        </div>
+        <div class="profile-info">
+            <h2>{{ profile.user.full_name }}</h2>
+            <p><strong>Группа:</strong> {{ profile.group.name }}</p>
+            <p><strong>Номер зачетки:</strong> {{ profile.student_id }}</p>
+            <p><strong>Телефон:</strong> {{ profile.phone|default:"Не указан" }}</p>
+            <p><strong>Адрес:</strong> {{ profile.address|default:"Не указан" }}</p>
+            <a href="{% url 'student_profile_edit' %}" class="btn btn-primary mt-20">✏️ Редактировать контакты</a>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика посещаемости -->
+<div class="card">
+    <h3 class="card-title">📊 Статистика посещаемости</h3>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_absences }}</div>
+            <div class="stat-label">Всего пропусков</div>
+        </div>
+    </div>
+    
+    <!-- График по неделям -->
+    <div class="chart-container">
+        <h4 style="margin-bottom: 20px;">Посещаемость по неделям (%)</h4>
+        <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 200px; border-bottom: 2px solid var(--border-color);">
+            {% for stat in weekly_stats %}
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div style="width: 40px; background: linear-gradient(to top, var(--primary-color), var(--primary-dark)); 
+                            height: {{ stat.percentage|floatformat:0 }}%; 
+                            min-height: 10px;
+                            border-radius: 4px 4px 0 0;
+                            transition: all 0.3s ease;">
+                </div>
+                <small style="font-weight: 600;">{{ stat.week }}</small>
+                <small style="color: var(--text-light); font-size: 11px;">{{ stat.percentage }}%</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Календарь -->
+    <div class="chart-container">
+        <h4 style="margin-bottom: 20px;">Календарь посещаемости (последние 60 дней)</h4>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 20px; height: 20px; background: #10b981; border-radius: 4px;"></div>
+                <span style="font-size: 13px;">Был на всех</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 20px; height: 20px; background: #f59e0b; border-radius: 4px;"></div>
+                <span style="font-size: 13px;">Были пропуски</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <div style="width: 20px; height: 20px; background: #ef4444; border-radius: 4px;"></div>
+                <span style="font-size: 13px;">Не был</span>
+            </div>
+        </div>
+        <div class="calendar-grid">
+            {% for day_data in calendar_data %}
+            <div class="calendar-day {{ day_data.status }}" title="{{ day_data.date|date:'d.m.Y' }} - {{ day_data.info }}">
+                {{ day_data.date.day }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

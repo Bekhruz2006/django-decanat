@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if schedule %}Редактирование{% else %}Создание{% endif %} занятия{% endblock %}
+
+{% block content %}
+<h2 style="font-size: 28px; margin-bottom: 30px;">
+    {% if schedule %}✏️ Редактирование занятия{% else %}➕ Добавление занятия{% endif %}
+</h2>
+
+<div class="card" style="max-width: 600px;">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <div style="color: var(--danger-color); font-size: 13px; margin-top: 5px;">
+                    {{ field.errors|join:", " }}
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="flex gap-10">
+            <button type="submit" class="btn btn-success">Сохранить</button>
+            <a href="{% url 'admin_schedule_manage' %}?group={{ group.id }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

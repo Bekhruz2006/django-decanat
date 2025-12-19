@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Деканат{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🎓 Деканат</h1>
+                    <p class="subtitle">Система управления учебным процессом</p>
+                </div>
+                
+                {% if user.is_authenticated %}
+                <div class="user-info">
+                    <span class="user-name">{{ user.full_name }}</span>
+                    <span class="user-role">({{ user.get_role_display }})</span>
+                    <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Вход</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Навигационное меню -->
+    {% if user.is_authenticated %}
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}" class="nav-link">Главная</a></li>
+                
+                {% if user.role == 'student' %}
+                    <li><a href="{% url 'schedule' %}" class="nav-link">Расписание</a></li>
+                    <li><a href="{% url 'student_journal' %}" class="nav-link">Мои оценки</a></li>
+                    <li><a href="{% url 'student_profile' %}" class="nav-link">Мой профиль</a></li>
+                    <li><a href="{% url 'chat_list' %}" class="nav-link">Чат</a></li>
+                
+                {% elif user.role == 'teacher' %}
+                    <li><a href="{% url 'teacher_groups' %}" class="nav-link">Мои группы</a></li>
+                    <li><a href="{% url 'schedule' %}" class="nav-link">Расписание</a></li>
+                    <li><a href="{% url 'chat_list' %}" class="nav-link">Чат</a></li>
+                
+                {% elif user.role == 'dean' %}
+                    <li><a href="{% url 'admin_panel' %}" class="nav-link">Администрирование</a></li>
+                    <li><a href="{% url 'teacher_groups' %}" class="nav-link">Журнал</a></li>
+                    <li><a href="{% url 'schedule' %}" class="nav-link">Расписание</a></li>
+                    <li><a href="{% url 'news_create' %}" class="nav-link">Добавить новость</a></li>
+                    <li><a href="{% url 'chat_list' %}" class="nav-link">Чат</a></li>
+                {% endif %}
+                
+                <li><a href="{% url 'news_list' %}" class="nav-link">Новости</a></li>
+                <li><a href="{% url 'contacts_view' %}" class="nav-link">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Сообщения -->
+    {% if messages %}
+    <div class="messages-container">
+        <div class="container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Деканат. Система управления учебным процессом</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
